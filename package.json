@@ -1,0 +1,1 @@
+{"name":"pulse-sondages","version":"1.0.0","private":true,"description":"Sondages en direct sans comptes utilisateur","scripts":{"start":"node server.js"},"dependencies":{"express":"^5.1.0","ws":"^8.18.0"}}

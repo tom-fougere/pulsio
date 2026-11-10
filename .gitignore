@@ -1,0 +1,5 @@
+node_modules/
+sessions.json
+.pnpm-store/
+server.log
+server-error.log
