@@ -1,4 +1,4 @@
-const draftKey='pulseDraft';
+const draftKey='pulsioDraft';
 const toastEl=document.getElementById('toast');
 let toastTimer;
 let sessionId='';
@@ -8,8 +8,8 @@ poll.askName=!!poll.askName;
 poll.advanceMode=poll.advanceMode==='timed'?'timed':'manual';
 poll.delaySeconds=Number(poll.delaySeconds)||30;
 
-function readDraft(){try{return JSON.parse(localStorage.getItem(draftKey)||'null')}catch{return null}}
-function saveDraft(){localStorage.setItem(draftKey,JSON.stringify(poll))}
+function readDraft(){try{return JSON.parse(PulsioStorage.get(draftKey,'pulseDraft')||'null')}catch{return null}}
+function saveDraft(){PulsioStorage.set(draftKey,JSON.stringify(poll))}
 function toast(text){toastEl.textContent=text;toastEl.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastEl.classList.remove('show'),2800)}
 function esc(text){return String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
@@ -56,6 +56,6 @@ document.getElementById('launchBtn').addEventListener('click',async()=>{
   if(!poll.title){toast('Donnez un nom au sondage avant de continuer.');return}
   const bad=poll.questions.findIndex(q=>!q.text.trim()||((q.type==='unique'||q.type==='multiple')&&(q.choices.length<2||q.choices.some(choice=>!choice.trim()))));
   if(bad>=0){toast(`Complétez la question ${bad+1} et ses réponses.`);document.querySelectorAll('.question-card-full')[bad]?.scrollIntoView({behavior:'smooth',block:'center'});return}
-  try{const state=await api('/api/sessions',{method:'POST',body:JSON.stringify(poll)});localStorage.setItem(`pulseHost:${state.id}`,state.hostKey);location.href=`presentation.html?session=${encodeURIComponent(state.id)}`}
+  try{const state=await api('/api/sessions',{method:'POST',body:JSON.stringify(poll)});PulsioStorage.set(`pulsioHost:${state.id}`,state.hostKey);location.href=`presentation.html?session=${encodeURIComponent(state.id)}`}
   catch(error){toast(`${error.message} Lancez le serveur avec npm start.`)}
 });

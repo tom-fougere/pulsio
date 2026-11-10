@@ -1,4 +1,4 @@
-# Pulse — sondages en direct
+# Pulsio — sondages en direct
 
 Application web sans compte pour les animateurs et les participants. Le serveur est nécessaire pour partager une session entre téléphones et recevoir les réponses en direct.
 

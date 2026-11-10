@@ -9,7 +9,7 @@ const app=express();
 const server=http.createServer(app);
 const wss=new WebSocketServer({server});
 const sessions=new Map();
-const dataPath=path.join(__dirname,'sessions.json');
+const dataPath=process.env.PULSIO_DATA_FILE?path.resolve(process.env.PULSIO_DATA_FILE):path.join(__dirname,'sessions.json');
 function saveSessions(){const rows=[...sessions.values()].map(({timer,...s})=>({...s,participants:[...s.participants.entries()]}));fs.writeFileSync(dataPath,JSON.stringify(rows,null,2))}
 try{for(const row of JSON.parse(fs.readFileSync(dataPath,'utf8'))){row.participants=new Map(row.participants||[]);row.timer=null;row.questionDeadlineAt=row.questionDeadlineAt||null;sessions.set(row.id,row);scheduleTimedQuestion(row,true)}}catch{}
 app.use(express.json({limit:'256kb'}));
@@ -56,4 +56,4 @@ app.post('/api/sessions/:id/next',(req,res)=>{const s=findSession(req.params.id.
 app.post('/api/sessions/:id/end',(req,res)=>{const s=findSession(req.params.id.toUpperCase(),res);if(!s)return;if(req.get('authorization')!==`Bearer ${s.hostKey}`)return res.status(403).json({error:'Accès animateur requis.'});s.active=false;s.questionDeadlineAt=null;if(s.timer)clearTimeout(s.timer);s.timer=null;saveSessions();emitState(s);res.json({ok:true})});
 wss.on('connection',(socket,request)=>{const url=new URL(request.url,'http://localhost');const id=(url.searchParams.get('session')||'').toUpperCase();const s=sessions.get(id);if(!s){socket.close(1008,'Session introuvable');return}socket.sessionId=id;socket.role=url.searchParams.get('role')||'participant';if(socket.role==='host'&&url.searchParams.get('key')!==s.hostKey){socket.close(1008,'Accès animateur requis');return}const state=publicState(s);socket.send(JSON.stringify({type:'state',state:socket.role==='host'?state:{...state,votes:[]}}))});
 const port=Number(process.env.PORT)||3000;
-server.listen(port,'0.0.0.0',()=>console.log(`Pulse est disponible sur http://localhost:${port}`));
+server.listen(port,'0.0.0.0',()=>console.log(`Pulsio est disponible sur http://localhost:${port}`));

@@ -1,5 +1,5 @@
 const sessionId=(new URLSearchParams(location.search).get('session')||'').toUpperCase();
-const hostKey=localStorage.getItem(`pulseHost:${sessionId}`)||'';
+const hostKey=PulsioStorage.get(`pulsioHost:${sessionId}`,`pulseHost:${sessionId}`)||'';
 const liveStage=document.getElementById('liveStage');const finishedPanel=document.getElementById('finishedPanel');const errorPanel=document.getElementById('presentationError');
 let socket;let lastState;let ended=false;let countdownInterval;let resultsCache;
 const headers={'Content-Type':'application/json',Authorization:`Bearer ${hostKey}`};
