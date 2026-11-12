@@ -8,4 +8,6 @@ window.PulsioStorage={
     return value;
   },
   set(key,value){localStorage.setItem(key,value)}
+  getHost(key){return sessionStorage.getItem(key)}
+  setHost(key,value){sessionStorage.setItem(key,value)}
 };
